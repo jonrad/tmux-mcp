@@ -21,10 +21,16 @@ def log(message: str) -> None:
 #    return "Message displayed in tmux"
 
 @mcp.tool()
-def run_command(command: str, args: list[str]) -> str:
+def run_tmux_command(command: str, args: list[str]) -> str:
     """run a generic command in tmux"""
+    if command == 'tmux':
+        command = args.pop(0)
+    
     log(f"Run command: {command} {args}")
-    return server.cmd(command, *args).stdout
+    result = server.cmd(command, *args)
+    formatted = "\n".join(result.stdout)
+    log(f"Result: {formatted}")
+    return formatted
 
 # Add a dynamic greeting resource
 @mcp.resource("greeting://{name}")
@@ -32,4 +38,5 @@ def get_greeting(name: str) -> str:
     """Get a personalized greeting"""
     return f"Hello, {name}!"
 
+#print(run_command("list-buffers", []))
 mcp.run()
