@@ -1,42 +1,37 @@
-# server.py
 from mcp.server.fastmcp import FastMCP
 import libtmux
-import typing as t
-from datetime import datetime
+import logging
+import os
 
 # Create an MCP server
-mcp = FastMCP("Tmux", settings={"log_level": "DEBUG"})
+mcp = FastMCP("tmux", settings={"log_level": "DEBUG"})
+
+# FastMCP sets its own logging, which we may want to override
+log_file = os.getenv("LOG_FILE", "default.log")
+if log_file:
+    file_handler = logging.FileHandler(log_file)
+    logging.root.handlers.append(file_handler)
+logger = logging.getLogger(__name__)
+
+# Connect to the tmux server
 server = libtmux.Server()
-log_file = "tmux-mcp.log"
 
-def log(message: str) -> None:
-    with open(log_file, "a") as f:
-        f.write(f"{datetime.now()}: {message}\n")
+logger.info("Starting tmux MCP server")
 
-#@mcp.tool()
-#def display_message(message: str) -> str:
-#    """Display message in tmux status bar"""
-#    log(f"Display message: {message}")
-#    server.cmd("display-message", message)
-#    return "Message displayed in tmux"
-
-@mcp.tool()
+@mcp.tool(description="Run a generic command in tmux")
 def run_tmux_command(command: str, args: list[str]) -> str:
-    """run a generic command in tmux"""
     if command == 'tmux':
         command = args.pop(0)
 
-    log(f"Run command: {command} {args}")
+    logger.info(f"Run command: {command} {args}")
     result = server.cmd(command, *args)
     formatted = "\n".join(result.stdout)
-    log(f"Result: {formatted}")
-    return formatted
+    logger.info(f"Result: {formatted}")
+    return result.stdout
 
-# Add a dynamic greeting resource
-@mcp.resource("greeting://{name}")
-def get_greeting(name: str) -> str:
-    """Get a personalized greeting"""
-    return f"Hello, {name}!"
+#@mcp.resource("tmux://pane/current", description="Gets the content of the current pane")
+@mcp.tool(description="Gets the content of the current pane")
+def get_current_pane_contents() -> str:
+    return server.panes[0].capture_pane(end="-10")
 
-#print(run_command("list-buffers", []))
 mcp.run()
