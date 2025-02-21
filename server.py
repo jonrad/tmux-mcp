@@ -31,10 +31,5 @@ def run_tmux_command(command: str, args: list[str]) -> str:
     logger.info(f"Result: {formatted}")
     return result.stdout
 
-#@mcp.resource("tmux://pane/current", description="Gets the content of the current pane")
-@mcp.tool(description="Gets the content of the current pane")
-def get_current_pane_contents() -> str:
-    return server.panes[0].capture_pane(end="-10")
-
 if __name__ == "__main__":
     main()
