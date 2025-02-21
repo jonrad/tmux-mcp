@@ -25,7 +25,7 @@ def run_tmux_command(command: str, args: list[str]) -> str:
     """run a generic command in tmux"""
     if command == 'tmux':
         command = args.pop(0)
-    
+
     log(f"Run command: {command} {args}")
     result = server.cmd(command, *args)
     formatted = "\n".join(result.stdout)
