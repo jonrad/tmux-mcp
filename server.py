@@ -20,7 +20,7 @@ def main():
     logger.info("Starting tmux MCP server")
     mcp.run()
 
-@mcp.tool(description="Run a generic command in tmux")
+@mcp.tool(description="Run a generic command in tmux. This is the equivalent of running `tmux <command> <args>` in your shell.")
 def run_tmux_command(command: str, args: list[str]) -> str:
     if command == 'tmux':
         command = args.pop(0)
