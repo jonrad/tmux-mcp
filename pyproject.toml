@@ -1,0 +1,11 @@
+[project]
+name = "tmux-mcp"
+version = "0.1.0"
+description = "MCP server implementation for tmux"
+dependencies = [
+    "libtmux>=0.44.2",
+    "mcp>=1.3.0"
+]
+
+[project.scripts]
+tmux-mcp = "server:main"
